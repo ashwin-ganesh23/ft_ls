@@ -23,9 +23,15 @@
 # include <grp.h>
 # include <errno.h>
 
+typedef struct	s_node
+{
+	struct dirent	*sd;
+	struct stat		buf;
+	struct t_node	*next;
+	struct t_node	*child;
 
+}				t_node;
 
-
+extern char flags[5];
 
 #endif
-

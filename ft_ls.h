@@ -28,10 +28,17 @@ typedef struct	s_node
 	struct dirent	*sd;
 	struct stat		buf;
 	struct t_node	*next;
-	struct t_node	*child;
-
+	struct t_node	*prev;
+	struct t_list	*child;
+	int				isdir;
 }				t_node;
 
-extern char flags[5];
+typedef struct	s_list
+{
+	struct t_node	*head;
+	struct t_node	*tail;
+	char 			flags[5];
+
+}				t_list;
 
 #endif

@@ -168,30 +168,27 @@ void 	readflags(int argc, char **argv, t_list *test)
 	}
 }
 
-// void 	list_directories(char *path)
-// {
-// 	DIR				*dir;
-// 	struct dirent	*sd;
-//
-//
-//
-// }
+t_list 	*new_lst()
+{
+	t_list *list;
 
-// void 	store_directories()
-// {
-//
-// }
+	if ((list = (t_list*)malloc(sizeof(*list))) == NULL)
+		return (NULL);
+	list->head = NULL;
+	list->tail = NULL;
+	return (list);
+}
 
 t_node	*new_nodelst(struct dirent *dir)
 {
 	t_node *node;
 
-	if ((node = (t_list*)malloc(sizeof(*node))) == NULL)
+	if ((node = (t_node*)malloc(sizeof(*node))) == NULL)
 		return (NULL);
 	node->next = NULL;
 	if (dir != NULL)
 	{
-		if ((node->sd = (struct dir*)malloc(sizeof(dir))) == NULL)
+		if ((node->sd = (struct dirent*)malloc(sizeof(dir))) == NULL)
 			return (NULL);
 		node->sd = dir;
 	}
@@ -203,25 +200,25 @@ t_node	*new_nodelst(struct dirent *dir)
 	return (node);
 }
 
-void 	insert_node(t_node **master, struct dirent *dir)
+int 	insert_node(t_node *master, struct dirent *dir)
 {
 	t_node *temp;
 
-	if (temp = (struct t_node *)malloc(sizeof(struct t_node)) == NULL)
-		return (NULL);
+	if ((temp = (t_node *)malloc(sizeof(t_node))) == NULL)
+		return (0);
   	temp->sd = dir;
   	temp->next = NULL;
 	temp->prev = NULL;
-  	if (!*master)
-	 	*master = temp;
+  	if (!master)
+	 	master = temp;
   	else
   	{
-		temp->next = *master;
-		*master->prev = temp;
-		*head = temp;
+		temp->next = master;
+		master->prev = temp;
+		master->head = temp;
 	}
-	node->next = *master;
-	*master = node;
+	temp->next = master;
+	master = temp;
 }
 
 t_node	*merge_sort(t_node *head)
@@ -236,13 +233,13 @@ t_node	*merge_sort(t_node *head)
     return (merge(head,second));
 }
 
-struct node *merge(struct node *first, struct node *second)
+t_node	*merge(t_node *first, t_node *second)
 {
     if (!first)
         return second;
     if (!second)
         return first;
-    if (first->data < second->data)
+    if (first->sd->d_name < second->sd->d_name)
     {
         first->next = merge(first->next,second);
         first->next->prev = first;
@@ -258,13 +255,13 @@ struct node *merge(struct node *first, struct node *second)
     }
 }
 
-struct node *split(struct node *head)
+t_node	*split(t_node *head)
 {
     t_node	*fast;
 	t_node	*slow;
 	t_node	*temp;
 
-	fast = head
+	fast = head;
 	slow = head;
     while (fast->next && fast->next->next)
     {
@@ -292,29 +289,33 @@ void 	opendirectory(char *path, t_list *master)
 	DIR				*dir;
 	struct dirent	*sd;
 	char			*newpath;
-	t_list			*tmp;
+	t_list 			*tmp;
 
 	if ((dir = opendir(path)) != NULL)
 	{
 		if (sd = readdir(dir) != NULL)
-			master->tail = new_nodelst(sd);
-		//master->dll = lstnew
-		while ((sd = readdir(dir)) != NULL)
 		{
-			master->head = insert_node();
+			master->tail = new_nodelst(sd);
+			master->head = master->tail;
+		}
+		while ((sd = readdir(dir)) != NULL)
+			master->head = insert_node(&master.head, sd);
+		master->head = merge_sort(master->head);
+		while (master->head->next)
+		{
 			newpath = ft_strjoin(path, "/");
-			newpath = ft_strjoin(newpath, sd->d_name);
-			//sort(master->head, master->tail)
+			newpath = ft_strjoin(newpath, master->head->sd->d_name);
 			if (isdir(newpath) && !ft_strequ(sd->d_name, ".") && !ft_strequ(sd->d_name, ".."))
 			{
+				tmp = new_lst();
 				printf("\n%s:\n", newpath);
-				opendirectory(newpath);
+				opendirectory(newpath, tmp);
 				free(newpath);
 			}
 			else
 				printf("%s\n", sd->d_name);
+			master->head = master->head->next;
 		}
-		while (master->)
 		closedir(dir);
 	}
 }
@@ -327,8 +328,7 @@ int		main(int argc, char **argv)
 		return (0);
 	readflags(argc, argv, &master);
 	//printf("%s\n", test.flags);
-	store_directories()
-	opendirectory(".");
+	opendirectory(".", &master);
 	return (0);
 }
 

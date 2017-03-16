@@ -38,7 +38,6 @@ typedef struct	s_list
 	struct t_node	*head;
 	struct t_node	*tail;
 	char 			flags[5];
-
 }				t_list;
 
 #endif

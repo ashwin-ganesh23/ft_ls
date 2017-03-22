@@ -13,8 +13,6 @@
 #include "ft_ls.h"
 #include <stdio.h>
 
-//node	*newlst()
-
 void	*ft_memset(void *b, int c, size_t len)
 {
 	unsigned char	*a;
@@ -200,7 +198,7 @@ t_node	*new_nodelst(struct dirent *dir)
 	return (node);
 }
 
-int 	insert_node(t_node *master, struct dirent *dir)
+int 	insert_node(t_node *m, t_list *master, struct dirent *dir)
 {
 	t_node *temp;
 
@@ -209,50 +207,17 @@ int 	insert_node(t_node *master, struct dirent *dir)
   	temp->sd = dir;
   	temp->next = NULL;
 	temp->prev = NULL;
-  	if (!master)
-	 	master = temp;
+  	if (!m)
+	 	m = temp;
   	else
   	{
-		temp->next = master;
-		master->prev = temp;
+		temp->next = m;
+		m->prev = temp;
 		master->head = temp;
 	}
-	temp->next = master;
-	master = temp;
-}
-
-t_node	*merge_sort(t_node *head)
-{
-	t_node	*second;
-
-	if (!head || !head->next)
-        return (head);
-    second = split(head);
-    head = merge_sort(head);
-    second = merge_sort(second);
-    return (merge(head,second));
-}
-
-t_node	*merge(t_node *first, t_node *second)
-{
-    if (!first)
-        return second;
-    if (!second)
-        return first;
-    if (first->sd->d_name < second->sd->d_name)
-    {
-        first->next = merge(first->next,second);
-        first->next->prev = first;
-        first->prev = NULL;
-        return first;
-    }
-    else
-    {
-        second->next = merge(first,second->next);
-        second->next->prev = second;
-        second->prev = NULL;
-        return second;
-    }
+	temp->next = m;
+	m = temp;
+	return (1);
 }
 
 t_node	*split(t_node *head)
@@ -273,6 +238,40 @@ t_node	*split(t_node *head)
     return (temp);
 }
 
+t_node	*merge(t_node *first, t_node *second)
+{
+    if (!first)
+        return second;
+    if (!second)
+        return first;
+    if (ft_strcmp(first->sd->d_name, second->sd->d_name) < 0)
+    {
+        first->next = merge(first->next,second);
+        first->next->prev = first;
+        first->prev = NULL;
+        return first;
+    }
+    else
+    {
+        second->next = merge(first,second->next);
+        second->next->prev = second;
+        second->prev = NULL;
+        return second;
+    }
+}
+
+t_node	*merge_sort(t_node *head)
+{
+	t_node	*second;
+
+	if (!head || !head->next)
+        return (head);
+    second = split(head);
+    head = merge_sort(head);
+    second = merge_sort(second);
+    return (merge(head,second));
+}
+
 int		isdir(char *path)
 {
 	struct stat statbuf;
@@ -290,32 +289,52 @@ void 	opendirectory(char *path, t_list *master)
 	struct dirent	*sd;
 	char			*newpath;
 	t_list 			*tmp;
+	t_node			*t;
+	char			mtime[100];
 
 	if ((dir = opendir(path)) != NULL)
 	{
-		if (sd = readdir(dir) != NULL)
+		if ((sd = readdir(dir)) != 0)
 		{
 			master->tail = new_nodelst(sd);
 			master->head = master->tail;
 		}
 		while ((sd = readdir(dir)) != NULL)
-			master->head = insert_node(&master.head, sd);
+			insert_node(master->head, master, sd);
+		//printf("%s\n", master->head->sd->d_name);
+
 		master->head = merge_sort(master->head);
-		while (master->head->next)
+		t = master->head;
+		while (t->next != NULL)
 		{
 			newpath = ft_strjoin(path, "/");
 			newpath = ft_strjoin(newpath, master->head->sd->d_name);
-			if (isdir(newpath) && !ft_strequ(sd->d_name, ".") && !ft_strequ(sd->d_name, ".."))
-			{
-				tmp = new_lst();
-				printf("\n%s:\n", newpath);
-				opendirectory(newpath, tmp);
-				free(newpath);
-			}
-			else
-				printf("%s\n", sd->d_name);
-			master->head = master->head->next;
+			if (stat(newpath, &t->buf) == -1)
+				exit(EXIT_FAILURE);
+			printf("%s\n", t->sd->d_name);
+			printf("st_mode = %o\n", t->buf.st_mode);
+			strcpy(mtime, ctime(&t->buf.st_mtime));
+			printf("st_mtime = %s\n", mtime);
+			printf("Ownership:UID=%ld   GID=%ld\n", (long)t->buf.st_uid, (long) t->buf.st_gid);
+			printf("%ld\n", (long)t->buf.st_nlink);
+			t = t->next;
 		}
+
+		// while (master->head->next)
+		// {
+		// 	newpath = ft_strjoin(path, "/");
+		// 	newpath = ft_strjoin(newpath, master->head->sd->d_name);
+		// 	if (isdir(newpath) && !ft_strequ(sd->d_name, ".") && !ft_strequ(sd->d_name, ".."))
+		// 	{
+		// 		tmp = new_lst();
+		// 		printf("\n%s:\n", newpath);
+		// 		opendirectory(newpath, tmp);
+		// 		free(newpath);
+		// 	}
+		// 	else
+		// 		printf("%s\n", sd->d_name);
+		// 	master->head = master->head->next;
+		// }
 		closedir(dir);
 	}
 }
@@ -327,7 +346,7 @@ int		main(int argc, char **argv)
 	if (argc < 2)
 		return (0);
 	readflags(argc, argv, &master);
-	//printf("%s\n", test.flags);
+	printf("%s\n", master.flags);
 	opendirectory(".", &master);
 	return (0);
 }

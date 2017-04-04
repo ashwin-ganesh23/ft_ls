@@ -27,7 +27,9 @@ typedef struct	s_node
 {
 	struct dirent	*sd;
 	struct stat		buf;
-	struct group	grp;
+	struct group	*grp;
+	struct passwd	pwd;
+	struct passwd	*pd;
 	struct s_node	*next;
 	struct s_node	*prev;
 	struct s_list	*child;

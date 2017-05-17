@@ -33,6 +33,7 @@ typedef struct	s_node
 	struct s_node	*next;
 	struct s_node	*prev;
 	struct s_list	*child;
+	char 			*filemode;
 	int				isdir;
 }				t_node;
 

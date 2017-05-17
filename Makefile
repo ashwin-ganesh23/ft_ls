@@ -4,11 +4,17 @@ CC = gcc
 
 FLAGS =	-Wall -Wextra -Werror
 
-CFILES = ./ft_ls.c
+CFILES =	./src/ft_ls.c
+CFILES +=	./src/linked_list.c
+CFILES +=	./src/sorts.c
+CFILES +=	./src/check_flag.c
+CFILES +=	./src/get_mode.c
 
 LIBFT = -L libft/ -lft
 
-HEADERS = -I ./ft_ls.h -I ./libft
+HEADERS = -I ./includes/ft_ls.h -I ./libft
+
+O_FILES = $(SRC:.c=.o)
 
 all: $(NAME)
 

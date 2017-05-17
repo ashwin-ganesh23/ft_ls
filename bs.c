@@ -21,11 +21,13 @@ int	main(int argc, char **argv)
 {
 	struct stat buf;
 	char mtime[100];
+	int	i;
 
 	stat("file.txt", &buf);
 
+	i = buf.st_mode % 8;
 	printf("st_mode = %o\n", buf.st_mode);
-
+	printf("%d\n", i);
 	strcpy(mtime, ctime(&buf.st_mtime));
 
 	printf("st_mtime = %s\n", mtime);

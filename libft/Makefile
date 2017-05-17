@@ -12,7 +12,7 @@
 
 NAME = libft.a
 GCC_FLAGS = gcc -c -Wall -Wextra -Werror
-SRC = 
+SRC =
 SRC += ft_atoi.c
 SRC += ft_bzero.c
 SRC += ft_even.c
@@ -77,14 +77,14 @@ SRC += ft_strtrim.c
 SRC += ft_tolower.c
 SRC += ft_toupper.c
 SRC += get_next_line.c
-HEADER_DIR = -I ./libft.h ./get_next_line.h
+HEADER_DIR = libft.h get_next_line.h
 O_FILES = $(SRC:.c=.o)
 
 all: $(NAME)
 
 $(NAME):
 		$(GCC_FLAGS) $(HEADER_DIR) $(SRC)
-		ar rc $(NAME) $(O_FILES) 
+		ar rc $(NAME) $(O_FILES)
 		ranlib $(NAME)
 
 clean:

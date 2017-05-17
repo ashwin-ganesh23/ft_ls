@@ -166,112 +166,6 @@ void 	readflags(int argc, char **argv, t_list *test)
 	}
 }
 
-t_list 	*new_lst()
-{
-	t_list *list;
-
-	if ((list = (t_list*)malloc(sizeof(*list))) == NULL)
-		return (NULL);
-	list->head = NULL;
-	list->tail = NULL;
-	return (list);
-}
-
-t_node	*new_nodelst(struct dirent *dir)
-{
-	t_node *node;
-
-	if ((node = (t_node*)malloc(sizeof(*node))) == NULL)
-		return (NULL);
-	node->next = NULL;
-	if (dir != NULL)
-	{
-		if ((node->sd = (struct dirent*)malloc(sizeof(dir))) == NULL)
-			return (NULL);
-		node->sd = dir;
-	}
-	else
-	{
-		node->sd = NULL;
-		//perror()
-	}
-	return (node);
-}
-
-int 	insert_node(t_node *m, t_list *master, struct dirent *dir)
-{
-	t_node *temp;
-
-	if ((temp = (t_node *)malloc(sizeof(t_node))) == NULL)
-		return (0);
-  	temp->sd = dir;
-  	temp->next = NULL;
-	temp->prev = NULL;
-  	if (!m)
-	 	m = temp;
-  	else
-  	{
-		temp->next = m;
-		m->prev = temp;
-		master->head = temp;
-	}
-	temp->next = m;
-	m = temp;
-	return (1);
-}
-
-t_node	*split(t_node *head)
-{
-    t_node	*fast;
-	t_node	*slow;
-	t_node	*temp;
-
-	fast = head;
-	slow = head;
-    while (fast->next && fast->next->next)
-    {
-        fast = fast->next->next;
-        slow = slow->next;
-    }
-    temp = slow->next;
-    slow->next = NULL;
-    return (temp);
-}
-
-t_node	*merge(t_node *first, t_node *second)
-{
-    if (!first)
-        return second;
-    if (!second)
-        return first;
-    if (ft_strcmp(first->sd->d_name, second->sd->d_name) < 0)
-    {
-        first->next = merge(first->next,second);
-        first->next->prev = first;
-        first->prev = NULL;
-        return first;
-    }
-    else
-    {
-        second->next = merge(first,second->next);
-        second->next->prev = second;
-        second->prev = NULL;
-        return second;
-    }
-}
-
-t_node	*merge_sort(t_node *head)
-{
-	t_node	*second;
-
-	if (!head || !head->next)
-        return (head);
-    second = split(head);
-    head = merge_sort(head);
-    second = merge_sort(second);
-    return (merge(head,second));
-}
-
 int		isdir(char *path)
 {
 	struct stat statbuf;
@@ -348,7 +242,7 @@ void 	opendirectory(char *path, t_list *master)
 			get_usergroup(t);
 			// put_time(t);
 			ft_strcpy(mtime, ctime(&tbuf.st_mtime));
-			
+
 			printf("st_mtime = %s\n", mtime);
 			// printf("%s\n", t->pd->pw_name);
 			// printf("%s\n", t->grp->gr_name);

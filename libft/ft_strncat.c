@@ -25,7 +25,7 @@ char	*ft_strncat(char *s1, const char *s2, size_t n)
 			adest++;
 		while (n > 0)
 		{
-			if ((*adest = *s2++) == 0)
+			if ((*adest = *asrc++) == 0)
 				break ;
 			adest++;
 			n--;

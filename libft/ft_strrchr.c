@@ -16,9 +16,9 @@ char	*ft_strrchr(const char *s, int c)
 {
 	char	a;
 	char	*str;
-	size_t	l;
-
-	l = ft_strlen(s) - 1;
+	// size_t	l;
+	//
+	// l = ft_strlen(s) - 1;
 	str = (char *)0;
 	if (c == '\0')
 	{
